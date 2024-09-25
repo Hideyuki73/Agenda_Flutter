@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
+
 import 'package:agenda/cadastro.dart';
 import 'package:agenda/contato.dart';
 import 'package:agenda/listagem.dart';
@@ -8,6 +10,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Principal(),
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSwatch(
+            cardColor: Colors.grey.shade900,
+            backgroundColor: Colors.white,
+            accentColor: Colors.white,
+            brightness: Brightness.dark,
+            primarySwatch: Colors.deepPurple),
+      )
     );
   }
 }
@@ -25,7 +35,7 @@ class Principal extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
+              FilledButton(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -36,10 +46,8 @@ class Principal extends StatelessWidget {
                 },
                 child: Text("Cadastro"),
               ),
-              SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
+              Padding(padding: EdgeInsets.symmetric(horizontal: 10)),
+              FilledButton(
                 onPressed: () {
                   Navigator.push(
                     context,

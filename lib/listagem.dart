@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, use_key_in_widget_constructors, prefer_const_constructors
 
+import 'package:agenda/cadastro.dart';
 import 'package:agenda/contato.dart';
 import 'package:flutter/material.dart';
 
@@ -50,18 +51,19 @@ class ListagemState extends State<Listagem> {
               ],
             ),
             trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-              ElevatedButton(
+              FilledButton(
                   onPressed: () {
                     setState(() {
-                      contatos.rmvContatos(Contato(
-                          nome: nomeController.text,
-                          telefone: telefoneController.text,
-                          email: emailController.text));
+                      contatos.rmvContatos(c);
                     });
                   },
                   child: Text('Deletar')),
               SizedBox(width: 10),
-              ElevatedButton(onPressed: () {}, 
+              FilledButton(onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Cadastro(contatos: contatos, contato: c, index: index,))).then((contato) => setState(() {
+                  contatos.updateContatos(index, contato);
+                }));
+              }, 
               child: Text('Editar'))
             ]),
           );
