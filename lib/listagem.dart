@@ -34,7 +34,7 @@ class ListagemState extends State<Listagem> {
       appBar: AppBar(
         title: Text('Listagem de Contatos'),
       ),
-      body: ListView.builder(
+      body: ListView.builder(//lista os contatos
         itemCount: contatos.getContatos().length,
         itemBuilder: (context, index) {
           Contato c = contatos.getContatos()[index];
@@ -50,16 +50,16 @@ class ListagemState extends State<Listagem> {
                 Text(c.telefone),
               ],
             ),
-            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: [//define botoes para editar ou deletar os contatos
               FilledButton(
                   onPressed: () {
                     setState(() {
-                      contatos.rmvContatos(c);
+                      contatos.removeContatos(c);
                     });
                   },
                   child: Text('Deletar')),
               SizedBox(width: 10),
-              FilledButton(onPressed: () {
+              FilledButton(onPressed: () {//puxa o cadastro e envia os dados do contato
                 Navigator.push(context, MaterialPageRoute(builder: (context) => Cadastro(contatos: contatos, contato: c, index: index,))).then((contato) => setState(() {
                   contatos.updateContatos(index, contato);
                 }));

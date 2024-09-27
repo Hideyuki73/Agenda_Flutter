@@ -18,10 +18,10 @@ class Cadastro extends StatefulWidget {
 class _CadastroState extends State<Cadastro> {
   TextEditingController nomeController = TextEditingController();
   TextEditingController telefoneController =
-      MaskedTextController(mask: '(00)00000 0000');
+      MaskedTextController(mask: '(00)00000 0000');//define o formato do numero
   TextEditingController emailController = TextEditingController();
   final ContatosRepository contatos;
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(); 
 
   _CadastroState({required this.contatos});
 
@@ -47,7 +47,7 @@ class _CadastroState extends State<Cadastro> {
           child: Form(
             key: _formKey,
             child: Column(
-              children: [
+              children: [//Define os campos de entrada de dados no cadastro
                 TextFormField(
                     decoration: InputDecoration(hintText: 'Nome'),
                     controller: nomeController,
@@ -77,7 +77,7 @@ class _CadastroState extends State<Cadastro> {
                       if (emailController == null || emailController.isEmpty) {
                         return 'Email obrigatorio';
                       }
-                      if (RegExp(r'^[\w-.]+@([\w-]+.)+[\w-]{2,4}$')
+                      if (RegExp(r'^[\w-.]+@([\w-]+.)+[\w-]{2,4}$')//verifica se o email é válido
                           .hasMatch(emailController)) {
                         return null;
                       }
@@ -91,7 +91,7 @@ class _CadastroState extends State<Cadastro> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           setState(() {
-                            if(widget.contato != null){
+                            if(widget.contato != null){//verifica se vai editar ou cadastrar, se for editar vai pegar o que tava salvo
                               Navigator.pop(context,
                                 Contato(
                                 nome: nomeController.text,
@@ -110,13 +110,7 @@ class _CadastroState extends State<Cadastro> {
                       },
                       child: Text('Salvar'),
                     ),
-                    Padding(padding: EdgeInsets.symmetric(horizontal: 10)),
-                    FilledButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text('Cancelar'),
-                    ),
+                    
                   ],
                 )
               ],

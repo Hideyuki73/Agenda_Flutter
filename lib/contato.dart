@@ -7,7 +7,7 @@ class ContatosRepository {
     contatos.add(contato);
   }
 
-  void rmvContatos(Contato contato){
+  void removeContatos(Contato contato){
     contatos.remove(contato);
   }
 

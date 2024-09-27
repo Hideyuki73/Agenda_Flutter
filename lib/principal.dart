@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Principal(),
-      theme: ThemeData.from(
+      theme: ThemeData.from(//define o tema da aplicação
         colorScheme: ColorScheme.fromSwatch(
             cardColor: Colors.grey.shade900,
             backgroundColor: Colors.white,
@@ -34,7 +34,7 @@ class Principal extends StatelessWidget {
         body: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: [//botões para enviar para a tela de listagem e cadastro
               FilledButton(
                 onPressed: () {
                   Navigator.push(
