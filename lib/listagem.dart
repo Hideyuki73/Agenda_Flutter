@@ -1,73 +1,94 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, use_key_in_widget_constructors, prefer_const_constructors
-
-import 'package:agenda/cadastro.dart';
-import 'package:agenda/contato.dart';
+import 'package:agenda/controller/contatoController.dart';
 import 'package:flutter/material.dart';
 
-class Contato {
-  final String nome;
-  final String telefone;
-  final String email;
-  Contato({required this.nome, required this.telefone, required this.email});
-}
-
 class Listagem extends StatefulWidget {
-  final ContatosRepository contatos;
-  Listagem({required this.contatos});
+  final ContatoController contatoController;
+
+  const Listagem({super.key, required this.contatoController});
 
   @override
-  // ignore: no_logic_in_create_state
-  State<Listagem> createState() => ListagemState(contatos: contatos);
+  State<StatefulWidget> createState() {
+    return _Listagem();
+  }
 }
 
-class ListagemState extends State<Listagem> {
-  final TextEditingController nomeController = TextEditingController();
-  final TextEditingController telefoneController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final ContatosRepository contatos;
-
-  ListagemState({required this.contatos});
-
+class _Listagem extends State<Listagem> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Listagem de Contatos'),
+        title: const Text('Listagem de Pessoas'),
       ),
-      body: ListView.builder(//lista os contatos
-        itemCount: contatos.getContatos().length,
-        itemBuilder: (context, index) {
-          Contato c = contatos.getContatos()[index];
-          return ListTile(
-            title: Text(
-              c.nome,
-              style: TextStyle(fontSize: 20),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(c.email),
-                Text(c.telefone),
-              ],
-            ),
-            trailing: Row(mainAxisSize: MainAxisSize.min, children: [//define botoes para editar ou deletar os contatos
-              FilledButton(
-                  onPressed: () {
-                    setState(() {
-                      contatos.removeContatos(c);
-                    });
-                  },
-                  child: Text('Deletar')),
-              SizedBox(width: 10),
-              FilledButton(onPressed: () {//puxa o cadastro e envia os dados do contato
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Cadastro(contatos: contatos, contato: c, index: index,))).then((contato) => setState(() {
-                  contatos.updateContatos(index, contato);
-                }));
-              }, 
-              child: Text('Editar'))
-            ]),
-          );
+      body: FutureBuilder<List>(
+        future: widget.contatoController
+            .listar(), // Chama o método assíncrono para obter o tamanho
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+                child:
+                    CircularProgressIndicator()); // Indicador de carregamento
+          } else if (snapshot.hasError) {
+            return Center(
+                child: Text('Erro: ${snapshot.error}')); // Mensagem de erro
+          } else {
+            // O número de itens
+            final List itens = snapshot.data!;
+            return ListView.builder(
+              itemCount: itens.length,
+              itemBuilder: (context, indice) {
+                return ListTile(
+                  title: Text(itens[indice].nome), // Exibe o nome da pessoa
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      // Confirmação antes de excluir
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Confirmar Exclusão'),
+                            content: const Text(
+                                'Você tem certeza que deseja excluir este item?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Fecha o diálogo
+                                },
+                                child: const Text('Cancelar'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  // Remove o item
+                                  await widget.contatoController
+                                      .remover(itens[indice]);
+                                  setState(
+                                      () {}); // Atualiza a lista após excluir
+                                  Navigator.of(context)
+                                      .pop(); // Fecha o diálogo
+                                },
+                                child: const Text('Excluir'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            );
+          }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/cadastro').then((_) {
+            setState(() {}); // Atualiza a lista após voltar
+          });
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

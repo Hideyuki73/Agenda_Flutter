@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
 
 import 'package:agenda/cadastro.dart';
-import 'package:agenda/contato.dart';
+import 'package:agenda/controller/contatoController.dart';
 import 'package:agenda/listagem.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Principal(),
+      home: Principal(contatoController: ContatoController()),
       theme: ThemeData.from(//define o tema da aplicação
         colorScheme: ColorScheme.fromSwatch(
             cardColor: Colors.grey.shade900,
@@ -23,7 +23,9 @@ class MyApp extends StatelessWidget {
 }
 
 class Principal extends StatelessWidget {
-  final ContatosRepository contatos = ContatosRepository();
+  final ContatoController contatoController;
+
+  const Principal({super.key, required this.contatoController});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,7 @@ class Principal extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Cadastro(contatos: contatos),
+                      builder: (context) => Cadastro(contatoController: contatoController),
                     ),
                   );
                 },
@@ -52,7 +54,7 @@ class Principal extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Listagem(contatos: contatos),
+                      builder: (context) => Listagem(contatoController: contatoController),
                     ),
                   );
                 },

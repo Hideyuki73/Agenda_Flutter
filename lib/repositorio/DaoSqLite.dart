@@ -1,6 +1,7 @@
 import 'package:agenda/entidade/contato.dart';
-import 'package:agenda/repositorio/interfaceDao.dart';
+import 'package:agenda/repositorio/interfaceDao';
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 class DaoSqLite implements InterfaceDao {
   Future<Database> initializeDB() async {

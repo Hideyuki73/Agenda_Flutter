@@ -1,121 +1,87 @@
 // ignore_for_file: prefer_const_constructors, no_logic_in_create_state
 
-import 'package:agenda/contato.dart';
-import 'package:agenda/listagem.dart';
+import 'package:agenda/controller/contatoController.dart';
+import 'package:agenda/entidade/contato.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
-class Cadastro extends StatefulWidget {
-  final ContatosRepository contatos;
-  final Contato? contato;
-  final int? index;
-  const Cadastro({super.key, required this.contatos, this.contato, this.index});
+class Cadastro extends StatelessWidget {
+  final ContatoController contatoController;
 
-  @override
-  State<Cadastro> createState() => _CadastroState(contatos: contatos);
-}
+  const Cadastro(
+      {super.key,
+      required this.contatoController}); // Recebe o controlador como argumento
+// Função para validar o email
+  bool _isEmailValid(String email) {
+    final RegExp emailRegex = RegExp(
+      r'^[^@]+@[^@]+\.[^@]+',
+    );
+    return emailRegex.hasMatch(email);
+  }
 
-class _CadastroState extends State<Cadastro> {
-  TextEditingController nomeController = TextEditingController();
-  TextEditingController telefoneController =
-      MaskedTextController(mask: '(00)00000 0000');//define o formato do numero
-  TextEditingController emailController = TextEditingController();
-  final ContatosRepository contatos;
-  final _formKey = GlobalKey<FormState>(); 
-
-  _CadastroState({required this.contatos});
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.contato != null) {
-      nomeController = TextEditingController(text: widget.contato!.nome);
-      emailController = TextEditingController(text: widget.contato!.email);
-      telefoneController =
-          TextEditingController(text: widget.contato!.telefone);
-    }
+  // Função para validar o telefone
+  bool _isTelefoneValid(String phone) {
+    final RegExp phoneRegex = RegExp(r'^\(\d{2}\) \d{4,5}-\d{4}$');
+    return phoneRegex.hasMatch(phone);
   }
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController nomeController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
+    MaskedTextController telefoneController =
+        MaskedTextController(mask: '(00) 00000-0000');
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Cadastro'),
-      ),
-      body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [//Define os campos de entrada de dados no cadastro
+        body: Column(
+              children: [
                 TextFormField(
                     decoration: InputDecoration(hintText: 'Nome'),
-                    controller: nomeController,
-                    validator: (nomeController) {
-                      if (nomeController == null || nomeController.isEmpty) {
-                        return 'Nome obrigatorio';
-                      }
-                      return null;
-                    }),
+                    controller: nomeController),
                 TextFormField(
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(hintText: '(XX)XXXXX XXXX'),
-                    controller: telefoneController,
-                    validator: (telefoneController) {
-                      if (telefoneController == null ||
-                          telefoneController.isEmpty || telefoneController.length == 11) {
-                        return 'Telefone obrigatorio';
-                      }
-                      return null;
-                    }),
+                    controller: telefoneController),
                 TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Email',
                     ),
-                    controller: emailController,
-                    validator: (emailController) {
-                      if (emailController == null || emailController.isEmpty) {
-                        return 'Email obrigatorio';
+                    controller: emailController),
+                FilledButton(
+                    onPressed: () {
+                      // Validação do e-mail
+                      if (!_isEmailValid(emailController.text)) {
+                        // Exibe um alerta se o email for inválido
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content:
+                                  Text('Por favor, insira um e-mail válido.')),
+                        );
+                        return; // Sai da função se o e-mail não for válido
                       }
-                      if (RegExp(r'^[\w-.]+@([\w-]+.)+[\w-]{2,4}$')//verifica se o email é válido
-                          .hasMatch(emailController)) {
-                        return null;
+                      if (!_isTelefoneValid(telefoneController.text)) {
+                        // Exibe um alerta se o telefone for inválido
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text(
+                                  'Por favor, insira um telefone válido.')),
+                        );
+                        return; // Sai da função se o e-mail não for válido
                       }
-                      return 'Email invalido';
-                    }),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FilledButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          setState(() {
-                            if(widget.contato != null){//verifica se vai editar ou cadastrar, se for editar vai pegar o que tava salvo
-                              Navigator.pop(context,
-                                Contato(
-                                nome: nomeController.text,
-                                email: emailController.text,
-                                telefone: telefoneController.text)
-                              );
-                            }else{
-                              contatos.addContatos(Contato(
-                                nome: nomeController.text,
-                                email: emailController.text,
-                                telefone: telefoneController.text));  
-                                Navigator.pop(context);
-                            }
-                          });
-                        }
-                      },
-                      child: Text('Salvar'),
-                    ),
-                    
-                  ],
-                )
+
+                      // Criação da nova Contato
+                      Contato novaContato = Contato(
+                        nome: nomeController.text,
+                        email: emailController.text,
+                        telefone: telefoneController.text,
+                      );
+
+                      // Adiciona a nova Contato ao controlador
+                      contatoController.salvar(novaContato);
+
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Salvar'))
               ],
-            ),
-          )),
-    );
+            ));
   }
 }
